@@ -19,19 +19,20 @@ let handler  = async (m, { conn, args, usedPrefix, command }) => {
       auth = true
     }
     conn.on('qr', async qr => {
-      let scan = await parent.sendFile(m.chat, await qrcode.toDataURL(qr, { scale: 8 }), 'qrcode.png', 'Scan QR ini untuk jadi Z BOT \n\n1. Klik titik tiga di pojok kanan atas\n2. Ketuk WhatsApp Web\n3. Scan QR ini \nQR Expired dalam 20 detik', m)
+      let scan = await parent.sendFile(m.chat, await qrcode.toDataURL(qr, { scale: 8 }), 'qrcode.png', 'Scan QR ini untuk menjadi Z BOT\n\n1. Klik titik tiga di pojok kanan atas\n2. Ketuk WhatsApp Web\n3. Scan QR ini \nQR Expired dalam 20 detik', m)
       setTimeout(() => {
         parent.deleteMessage(m.chat, scan.key)
       }, 30000)
     })
     conn.once('connection-validated', user => {
-      parent.reply(m.chat, 'Berhasil tersambung dengan WhatsApp - mu.\n*NOTE: Jika Z BOT offline bot anda juga*\n\n' + JSON.stringify(user, null, 2), m)
+      parent.reply(m.chat, 'Berhasil tersambung dengan WhatsApp - mu.\n*NOTE: Jika Z BOT mati bot anda juga*\n\n' + JSON.stringify(user, null, 2), m)
     })
     conn.welcome = global.conn.welcome
     conn.bye = global.conn.bye
     conn.on('group-add', global.conn.onAdd)
     conn.on('group-leave', global.conn.onLeave)
     conn.on('message-new', global.conn.handler)
+    conn.on('message-delete', global.conn.onDelete)
     conn.regenerateQRIntervalMs = null
     conn.connect().then(async ({user}) => {
       if (auth) return
@@ -43,9 +44,21 @@ let handler  = async (m, { conn, args, usedPrefix, command }) => {
       conn.close()
       delete global.conns[id]
     }, 60000)
-    conn.on('close', conn.logger.info)
+    conn.on('close', () => {
+      setTimeout(async () => {
+        try {
+          if (conn.state != 'close') return
+          if (conn.user && conn.user.jid)
+            parent.sendMessage(conn.user.jid, `Koneksi terputus...`, MessageType.extendedText)
+          let i = global.conns.indexOf(conn)
+          if (i < 0) return
+          delete global.conns[i]
+          global.conns.splice(i, 1)
+        } catch (e) { conn.logger.error(e) }
+      }, 30000)
+    })
     global.conns.push(conn)
-  } else throw 'Tidak bisa membuat bot didalam bot!\n\nhttps://wa.me/' + global.conn.user.jid.split`@`[0] + '?text=.jadibot'
+  } else throw 'Saya hanya Z BOT sementara\n\nhttps://wa.me/' + global.conn.user.jid.split`@`[0] + '?text=.jadibot'
 }
 handler.help = ['jadibot']
 handler.tags = ['jadibot']

@@ -33,9 +33,10 @@ let handler  = async (m, { conn, usedPrefix: _p }) => {
     let muptime = clockString(_muptime)
     let uptime = clockString(_uptime)
     let totalreg = Object.keys(global.DATABASE._data.users).length
+    let rtotalreg = Object.values(global.DATABASE._data.users).filter(user => user.registered == true).length
     let tags = {
       'main': 'MAIN MENU',
-      'xp': 'LIMIT MENU',
+      'xp': 'EXP MENU',
       'sticker': 'STICKER MENU',
       'kerang': 'KERANG MENU',
       'quotes': 'QUOTES MENU',
@@ -43,14 +44,14 @@ let handler  = async (m, { conn, usedPrefix: _p }) => {
       'group': 'GROUP MENU',
       'internet': 'INTERNET MENU',
       'downloader': 'DOWNLOADER MENU',
-      'tools': 'OTHER MENU',
+      'tools': 'TOOLS MENU',
       'fun': 'FUN MENU',
       'jadibot': 'JADI BOT',
       'owner': 'OWNER MENU',
       'host': 'HOST MENU',
       'advanced': 'ADVANCED MENU',
-      'info': 'INGFO MENU',
-      '': 'NO CATEGORY',
+      'info': 'INFO MENU',
+      '': 'No Category',
     }
     for (let plugin of Object.values(global.plugins))
       if (plugin && 'tags' in plugin)
@@ -89,11 +90,12 @@ let handler  = async (m, { conn, usedPrefix: _p }) => {
    %uptime
  ❏ uptime :
    %muptime
- ❏ Total user :
-   %totalreg user
- ❏ Prefix = Z
- ❏ Owner = Fajar dan Nabil
- │
+ ❏ Total reg:
+   %rtotalreg of %totalreg
+ ❏ Prefix =
+  「 Z 」
+ ❏ Owner =
+   Fajar dan Nabil
  │
  ❏ Z BOT :
    wa.me/6283820666907
@@ -108,7 +110,6 @@ let handler  = async (m, { conn, usedPrefix: _p }) => {
   Z BOT Jika BOT sedang kehabisan
   ApiKey dan VPS mati tolong
   donasinya
- │
  │
 ◪ Jika ingin ikut event menarik
   Bisa masuk grup Official Z BOT
@@ -128,7 +129,7 @@ let handler  = async (m, { conn, usedPrefix: _p }) => {
         for (let help of menu.help)
           _text += body.replace(/%cmd/g, menu.prefix ? help : '%p' + help).replace(/%islimit/g, menu.limit ? ' (Limit)' : '')  + '\n'
       }
-      _text += footer
+      _text += footer + ''
     }
     _text += after
     text =  typeof conn.menu == 'string' ? conn.menu : typeof conn.menu == 'object' ? _text : ''
@@ -139,7 +140,7 @@ let handler  = async (m, { conn, usedPrefix: _p }) => {
       npmdesc: package.description,
       version: package.version,
       github: package.homepage ? package.homepage.url || package.homepage : '[unknown github url]',
-      exp, limit, name, weton, week, date, time, totalreg,
+      exp, limit, name, weton, week, date, time, totalreg, rtotalreg,
       readmore: readMore
     }
     text = text.replace(new RegExp(`%(${Object.keys(replace).join`|`})`, 'g'), (_, name) => replace[name])
