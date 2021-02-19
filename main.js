@@ -22,11 +22,13 @@ global.prems = [] // Premium user has unlimited limit
 global.APIs = { // API Prefix
   // name: 'https://website'
   nrtm: 'https://nurutomo.herokuapp.com',
-  xteam: 'https://api.xteam.xyz'
+  xteam: 'https://api.xteam.xyz',
+  vhtear: 'https://api.vhtear.com',
 }
 global.APIKeys = { // APIKey Here
   // 'https://website': 'apikey'
-  'https://api.xteam.xyz': 'test'
+  'https://api.xteam.xyz': 'test',
+  'https://api.vhtear.com': 'Ahmad123'
 }
 
 
@@ -74,7 +76,7 @@ if (!opts['test']) setInterval(() => {
     conn.logger.info('Done saving database!')
     lastJSON = JSON.stringify(global.DATABASE.data)
   }
-}, 480 * 1000) // Save every minute
+}, 500 * 1000) // Save every minute
 
 const isNumber = x => typeof x === 'number' && !isNaN(x)
 conn.handler = async function (m) {
@@ -269,8 +271,8 @@ conn.handler = async function (m) {
     }
   }
 }
-conn.welcome = 'Hai, @user!\nSelamat datang di grup @subject'
-conn.bye = 'Selamat tinggal @user!'
+conn.welcome = 'Halo @user 👋\nSelamat datang di Grup\n*@subject*\n\nIntro Member Baru\n\n• 1.Nama:\n• 2.Umur:\n• 3.Status:\n• 4.Askot:\n\nSering nimbrung dan baca rules grup'
+conn.bye = 'alhamdulillah, beban hilang 1 @user'
 conn.onAdd = async function ({ m, participants }) {
   let chat = global.DATABASE._data.chats[m.key.remoteJid]
   if (!chat.welcome) return
@@ -301,7 +303,7 @@ conn.onLeave = async function  ({ m, participants }) {
     } catch (e) {
     } finally {
       let text = (chat.sBye || this.bye || conn.bye || 'Bye, @user!').replace('@user', '@' + user.split('@')[0])
-      this.sendFile(m.key.remoteJid, pp, 'pp.jpg', text, m, false, {
+      this.sendFile(m.key.remoteJid, text, m, false, {
         contextInfo: {
           mentionedJid: [user]
         }
@@ -315,13 +317,13 @@ conn.onDelete = async function (m) {
   let chat = global.DATABASE._data.chats[m.key.remoteJid]
   if (chat.delete) return
   await this.reply(m.key.remoteJid, `
-Terdeteksi @${m.participant.split`@`[0]} telah menghapus pesan
+Terdeteksi @user telah menghapus pesan
 
 Untuk mematikan fitur ini, ketik
-*.enable delete*
+*Zdisable delete*
 `.trim(), m.message, {
     contextInfo: {
-      mentionedJid: [m.participant]
+      mentionedJid: [user]
     }
   })
   this.copyNForward(m.key.remoteJid, m.message).catch(e => console.log(e, m))
@@ -348,7 +350,7 @@ conn.on('close', () => {
 
 global.dfail = (type, m, conn) => {
   let msg = {
-    rowner: 'Perintag ini hanya dapat digunakan oleh _*OWWNER!1!1!*_',
+    rowner: 'Perintah ini hanya dapat digunakan oleh _*OWWNER!1!1!*_',
     owner: 'Perintah ini hanya dapat digunakan oleh _*Owner Bot*_!',
     mods: 'Perintah ini hanya dapat digunakan oleh _*Moderator*_ !',
     premium: 'Perintah ini hanya untuk member _*Premium*_ !',
